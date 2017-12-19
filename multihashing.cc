@@ -46,8 +46,7 @@ void Scrypt(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
    scrypt_N_R_1_256(input, output, nValue, rValue, input_len);
 
-   MaybeLocal<Object> buffer = Nan::NewBuffer(output, 32);
-   args.GetReturnValue().Set(buffer.ToLocalChecked());
+   args.GetReturnValue().Set(String::NewFromUtf8(isolate, output));
 }
 
 void init(v8::Local<v8::Object> target) {
