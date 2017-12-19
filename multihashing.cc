@@ -20,7 +20,6 @@ Handle<Value> except(const char* msg) {
 
 void Scrypt(const v8::FunctionCallbackInfo<v8::Value>& args) {
    v8::Isolate* isolate = args.GetIsolate();
-//   v8::HandleScope scope(isolate);
 
    if (args.Length() < 3) {
        isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Wrong number of arguments")));
@@ -46,7 +45,8 @@ void Scrypt(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
    scrypt_N_R_1_256(input, output, nValue, rValue, input_len);
 
-   args.GetReturnValue().Set(String::NewFromUtf8(isolate, output));
+   v8::Local<v8::Value> returnValue = Nan::CopyBuffer(output, 32).ToLocalChecked();
+   args.GetReturnValue().Set(returnValue);
 }
 
 void init(v8::Local<v8::Object> target) {
