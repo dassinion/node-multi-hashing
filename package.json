@@ -10,7 +10,8 @@
     "url": "https://github.com/dassinion/node-multi-hashing-sd.git"
   },
   "dependencies": {
-    "bindings": "*"
+    "bindings": "*",
+    "nan"
   },
   "keywords": [
     "scrypt",
