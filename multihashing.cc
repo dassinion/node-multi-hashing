@@ -2,6 +2,7 @@
 #include <node_buffer.h>
 #include <v8.h>
 #include <stdint.h>
+#include <nan.h>
 
 extern "C" {
     #include "scryptn.h"
@@ -14,7 +15,7 @@ using namespace v8;
 
 Handle<Value> except(const char* msg) {
     Isolate* isolate = Isolate::GetCurrent();
-    isolate->ThrowException(String::NewFromUtf8(isolate, "error string here"));
+    return isolate->ThrowException(String::NewFromUtf8(isolate, msg));
 }
 
 void Scrypt(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -45,11 +46,11 @@ void Scrypt(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
    scrypt_N_R_1_256(input, output, nValue, rValue, input_len);
 
-   args.GetReturnValue().Set(v8::String::NewFromUtf8(isolate, output));
+   MaybeLocal<Object> buffer = Nan::NewBuffer(output, 32);
+   args.GetReturnValue().Set(buffer.ToLocalChecked());
 }
 
 void init(v8::Local<v8::Object> target) {
-//    exports->Set(NanSymbol("scrypt"), FunctionTemplate::New(scrypt)->GetFunction());
     NODE_SET_METHOD(target, "scrypt", Scrypt);
 }
 
