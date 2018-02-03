@@ -48,7 +48,8 @@ static void expandArray(const unsigned char *in, const size_t in_len,
     uint32_t acc_value = 0;
 
     size_t j = 0;
-    for (size_t i = 0; i < in_len; i++) {
+    uint32_t i;
+    for(i = 0; i < in_len; i++) {
       acc_value = (acc_value << 8) | in[i];
       acc_bits += 8;
 
@@ -56,10 +57,11 @@ static void expandArray(const unsigned char *in, const size_t in_len,
       // output element.
       if (acc_bits >= bit_len) {
         acc_bits -= bit_len;
-        for (size_t x = 0; x < byte_pad; x++) {
+	uint32_t x;
+        for(x = 0; x < byte_pad; x++) {
           out[j + x] = 0;
         }
-        for (size_t x = byte_pad; x < out_width; x++) {
+        for(x = byte_pad; x < out_width; x++) {
           out[j + x] = (
             // Big-endian
             acc_value >> (acc_bits + (8 * (out_width - x - 1)))
