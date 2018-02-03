@@ -29,6 +29,7 @@ extern "C" {
     #include "sha1.h"
     #include "x15.h"
     #include "fresh.h"
+    #include "equi.h"
     #include "dcrypt.h"
     #include "jh.h"
     #include "x5.h"
@@ -873,6 +874,30 @@ void c11(const v8::FunctionCallbackInfo<v8::Value>& args) {
    args.GetReturnValue().Set(returnValue);
 }
 
+void equihash(const v8::FunctionCallbackInfo<v8::Value>& args) {
+   v8::Isolate* isolate = args.GetIsolate();
+
+   if (args.Length() < 2) {
+       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Wrong number of arguments")));
+       return;
+   }
+
+   Local<Object> header = args[0]->ToObject();
+   Local<Object> solution = args[1]->ToObject();
+
+   if(!Buffer::HasInstance(header) || !Buffer::HasInstance(solution)) {
+       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate,"Argument should be a buffer object.")));
+       return;
+   }
+
+   char *hdr = Buffer::Data(header);
+   char *soln = Buffer::Data(solution);
+
+   bool result = verifyEH(hdr, soln);
+
+   args.GetReturnValue().Set(result);
+}
+
 void init(v8::Local<v8::Object> target) {
     NODE_SET_METHOD(target, "scrypt", Scrypt);
     NODE_SET_METHOD(target, "quark", Quark);
@@ -903,6 +928,7 @@ void init(v8::Local<v8::Object> target) {
     NODE_SET_METHOD(target, "sha1", sha1);
     NODE_SET_METHOD(target, "x15", x15);
     NODE_SET_METHOD(target, "fresh", fresh);
+    NODE_SET_METHOD(target, "equihash", equihash);
     NODE_SET_METHOD(target, "jh", jh);
     NODE_SET_METHOD(target, "c11", c11);
 }

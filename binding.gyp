@@ -11,6 +11,7 @@
                 "keccak.c",
                 "skein.c",
                 "x11.c",
+		"equi.c",
                 "quark.c",
                 "bcrypt.c",
                 "groestl.c",

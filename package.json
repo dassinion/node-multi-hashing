@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "bindings": "*",
-    "nan": "*"
+    "nan": "^2.7.0"
   },
   "keywords": [
     "scrypt",
@@ -28,6 +28,7 @@
     "fugue",
     "yescrypt",
     "sha1",
+    "equihash",
     "neoscrypt",
     "decrypt"
   ],
