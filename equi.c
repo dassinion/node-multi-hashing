@@ -114,13 +114,15 @@ bool verifyEH(const char *hdr, const char *soln) {
 
   uint8_t vHash[hashLength];
   memset(vHash, 0 , sizeof(vHash));
-  for (int j = 0; j < solnr; j++) {
+  uint32_t j;
+  for(j = 0; j < solnr; j++) {
   	uint8_t tmpHash[hashOutput];
   	uint8_t hash[hashLength];
   	int i = be32toh(indices[j]);
   	generateHash(&state, i / indicesPerHashOutput, tmpHash, hashOutput);
   	expandArray(tmpHash + (i % indicesPerHashOutput * n / 8), n / 8, hash, hashLength, collisionBitLength, 0);
-  	for (int k = 0; k < hashLength; ++k)
+	uint32_t k;
+  	for(k = 0; k < hashLength; ++k)
   	    vHash[k] ^= hash[k];
   }
   return isZero(vHash, sizeof(vHash));
