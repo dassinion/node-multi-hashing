@@ -77,7 +77,8 @@ static void expandArray(const unsigned char *in, const size_t in_len,
 
 static int isZero(const uint8_t *hash, size_t len) {
   // This doesn't need to be constant time.
-  for (int i = 0; i < len; i++) {
+  uint32_t i;
+  for(i = 0; i < len; i++) {
     if (hash[i] != 0)
       return 0;
   }
