@@ -21,11 +21,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
-
-#include "compat.h"
-
 #include "yescrypt.h"
-#include "sha256_Y.h"
 
 #define BYTES2CHARS(bytes) \
 	((((bytes) * 8) + 5) / 6)
@@ -33,11 +29,11 @@
 #define HASH_SIZE 32 /* bytes */
 #define HASH_LEN BYTES2CHARS(HASH_SIZE) /* base-64 chars */
 #define YESCRYPT_FLAGS (YESCRYPT_RW | YESCRYPT_PWXFORM)
-
 static const char * const itoa64 =
 	"./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-static uint8_t* encode64_uint32(uint8_t* dst, size_t dstlen, uint32_t src, uint32_t srcbits)
+static uint8_t * encode64_uint32(uint8_t * dst, size_t dstlen,
+    uint32_t src, uint32_t srcbits)
 {
 	uint32_t bit;
 
@@ -52,7 +48,8 @@ static uint8_t* encode64_uint32(uint8_t* dst, size_t dstlen, uint32_t src, uint3
 	return dst;
 }
 
-static uint8_t* encode64(uint8_t* dst, size_t dstlen, const uint8_t* src, size_t srclen)
+static uint8_t * encode64(uint8_t * dst, size_t dstlen,
+    const uint8_t * src, size_t srclen)
 {
 	size_t i;
 
@@ -73,18 +70,19 @@ static uint8_t* encode64(uint8_t* dst, size_t dstlen, const uint8_t* src, size_t
 	return dst;
 }
 
-static int decode64_one(uint32_t* dst, uint8_t src)
+static int decode64_one(uint32_t * dst, uint8_t src)
 {
 	const char * ptr = strchr(itoa64, src);
 	if (ptr) {
-		*dst = (uint32_t) (ptr - itoa64);
+		*dst = ptr - itoa64;
 		return 0;
 	}
 	*dst = 0;
 	return -1;
 }
 
-static const uint8_t* decode64_uint32(uint32_t* dst, uint32_t dstbits, const uint8_t* src)
+static const uint8_t * decode64_uint32(uint32_t * dst, uint32_t dstbits,
+    const uint8_t * src)
 {
 	uint32_t bit;
 	uint32_t value;
@@ -104,8 +102,11 @@ static const uint8_t* decode64_uint32(uint32_t* dst, uint32_t dstbits, const uin
 	return src;
 }
 
-uint8_t* yescrypt_r(const yescrypt_shared_t* shared, yescrypt_local_t* local,
-    const uint8_t* passwd, size_t passwdlen, const uint8_t* setting, uint8_t* buf, size_t buflen)
+uint8_t *
+yescrypt_r(const yescrypt_shared_t * shared, yescrypt_local_t * local,
+    const uint8_t * passwd, size_t passwdlen,
+    const uint8_t * setting,
+    uint8_t * buf, size_t buflen)
 {
 	uint8_t hash[HASH_SIZE];
 	const uint8_t * src, * salt;
@@ -115,82 +116,75 @@ uint8_t* yescrypt_r(const yescrypt_shared_t* shared, yescrypt_local_t* local,
 	uint64_t N;
 	uint32_t r, p;
 	yescrypt_flags_t flags = YESCRYPT_WORM;
-
-	printf("pass1 ...");
-	fflush(stdout);
-
-	if (setting[0] != '$' || setting[1] != '7') {
-		printf("died$7 ...");
-		fflush(stdout);
-		return NULL;
-	}
-
-	printf("died80 ...");
-	fflush(stdout);
-
+         printf("pass1 ...");
+          fflush(stdout);
+	if (setting[0] != '$' || setting[1] != '7')
+           {printf("died$7 ...");
+            fflush(stdout);
+		return NULL; 
+          }
+          printf("died80 ...");
+          fflush(stdout);  
 	src = setting + 2;
-
-	printf("hello '%p'\n", (char *)src);
-	fflush(stdout);
-
+          printf("hello '%p'\n", (char *)src);
+          fflush(stdout); 
 	switch ((version = *src)) {
 	case '$':
-		printf("died2 ...");
-		fflush(stdout);
+                printf("died2 ...");
+                fflush(stdout);
 		break;
 	case 'X':
 		src++;
 		flags = YESCRYPT_RW;
-		printf("died3 ...");
-		fflush(stdout);
+                printf("died3 ...");
+                fflush(stdout);
 		break;
 	default:
-		printf("died4 ...");
-		fflush(stdout);
-		return NULL;
+	  {printf("died4 ...");
+            fflush(stdout);
+		return NULL; 
+          }
 	}
-
-	printf("pass2 ...");
-	fflush(stdout);
-
+         printf("pass2 ...");
+          fflush(stdout);
 	if (*src != '$') {
 		uint32_t decoded_flags;
-		if (decode64_one(&decoded_flags, *src)) {
-			printf("died5 ...");
-			fflush(stdout);
-			return NULL;
-		}
-		flags = decoded_flags;
-		if (*++src != '$') {
-			printf("died6 ...");
-			fflush(stdout);
-			return NULL;
-		}
-	}
+		if (decode64_one(&decoded_flags, *src))
 
+	        {printf("died5 ...");
+                 fflush(stdout);
+		return NULL; 
+                }
+		flags = decoded_flags;
+		if (*++src != '$')
+	        {printf("died6 ...");
+                 fflush(stdout);
+		 return NULL; 
+                }
+	}
 	src++;
 
 	{
 		uint32_t N_log2;
-		if (decode64_one(&N_log2, *src)) {
-			printf("died7 ...");
-			return NULL;
-		}
+		if (decode64_one(&N_log2, *src))
+			{printf("died7 ...");
+		         return NULL; 
+                        }
 		src++;
 		N = (uint64_t)1 << N_log2;
 	}
 
 	src = decode64_uint32(&r, 30, src);
-	if (!src) {
-		printf("died6 ...");
-		return NULL;
-	}
+	if (!src)
+          {printf("died6 ...");
+		return NULL; 
+          }
 
 	src = decode64_uint32(&p, 30, src);
-	if (!src) {
-		printf("died7 ...");
-		return NULL;
-	}
+	if (!src)
+         {printf("died7 ...");
+		return NULL; 
+          }
 
 	prefixlen = src - setting;
 
@@ -202,18 +196,21 @@ uint8_t* yescrypt_r(const yescrypt_shared_t* shared, yescrypt_local_t* local,
 		saltlen = strlen((char *)salt);
 
 	need = prefixlen + saltlen + 1 + HASH_LEN + 1;
-	if (need > buflen || need < saltlen) {
-		printf("'%d %d %d'", (int) need, (int) buflen, (int) saltlen);
-		printf("died8killbuf ...");
-		fflush(stdout);
-		return NULL;
-	}
-
-	if (yescrypt_kdf(shared, local, passwd, passwdlen, salt, saltlen, N, r, p, 0, flags, hash, sizeof(hash))) {
-		printf("died10 ...");
-		fflush(stdout);
-		return NULL;
-	}
+	if (need > buflen || need < saltlen)
+                            
+		           {printf("'%d %d %d'",need,buflen, saltlen);fflush(stdout);
+                            printf("died8killbuf ...");
+                            fflush(stdout);
+		return NULL; 
+          }
+printf("pass3 ...");
+fflush(stdout);
+	if (yescrypt_kdf(shared, local, passwd, passwdlen, salt, saltlen,
+	    N, r, p, 0, flags, hash, sizeof(hash)))
+		           {printf("died10 ...");
+                             fflush(stdout);
+		return NULL; 
+          }
 
 	dst = buf;
 	memcpy(dst, setting, prefixlen + saltlen);
@@ -223,26 +220,24 @@ uint8_t* yescrypt_r(const yescrypt_shared_t* shared, yescrypt_local_t* local,
 	dst = encode64(dst, buflen - (dst - buf), hash, sizeof(hash));
 	/* Could zeroize hash[] here, but yescrypt_kdf() doesn't zeroize its
 	 * memory allocations yet anyway. */
-	if (!dst || dst >= buf + buflen) { /* Can't happen */
-		printf("died11 ...");
-		return NULL;
-	}
+	if (!dst || dst >= buf + buflen) /* Can't happen */
+		           {printf("died11 ...");
+		return NULL; 
+          }
 
 	*dst = 0; /* NUL termination */
-
-	printf("died12 ...");
-	fflush(stdout);
-
+           printf("died12 ...");
+           fflush(stdout);
 	return buf;
 }
 
-uint8_t* yescrypt(const uint8_t* passwd, const uint8_t* setting)
+uint8_t *
+yescrypt(const uint8_t * passwd, const uint8_t * setting)
 {
 	static uint8_t buf[4 + 1 + 5 + 5 + BYTES2CHARS(32) + 1 + HASH_LEN + 1];
 	yescrypt_shared_t shared;
 	yescrypt_local_t local;
 	uint8_t * retval;
-
 	if (yescrypt_init_shared(&shared, NULL, 0,
 	    0, 0, 0, YESCRYPT_SHARED_DEFAULTS, 0, NULL, 0))
 		return NULL;
@@ -252,7 +247,7 @@ uint8_t* yescrypt(const uint8_t* passwd, const uint8_t* setting)
 	}
 	retval = yescrypt_r(&shared, &local,
 	    passwd, 80, setting, buf, sizeof(buf));
-	//printf("hashse='%s'\n", (char *)retval);
+        // printf("hashse='%s'\n", (char *)retval);
 	if (yescrypt_free_local(&local)) {
 		yescrypt_free_shared(&shared);
 		return NULL;
@@ -260,10 +255,14 @@ uint8_t* yescrypt(const uint8_t* passwd, const uint8_t* setting)
 	if (yescrypt_free_shared(&shared))
 		return NULL;
 	return retval;
+      
 }
 
-uint8_t* yescrypt_gensalt_r(uint32_t N_log2, uint32_t r, uint32_t p, yescrypt_flags_t flags,
-    const uint8_t* src, size_t srclen, uint8_t* buf, size_t buflen)
+uint8_t *
+yescrypt_gensalt_r(uint32_t N_log2, uint32_t r, uint32_t p,
+    yescrypt_flags_t flags,
+    const uint8_t * src, size_t srclen,
+    uint8_t * buf, size_t buflen)
 {
 	uint8_t * dst;
 	size_t prefixlen = 3 + 1 + 5 + 5;
@@ -318,7 +317,9 @@ uint8_t* yescrypt_gensalt_r(uint32_t N_log2, uint32_t r, uint32_t p, yescrypt_fl
 	return buf;
 }
 
-uint8_t* yescrypt_gensalt(uint32_t N_log2, uint32_t r, uint32_t p, yescrypt_flags_t flags,
+uint8_t *
+yescrypt_gensalt(uint32_t N_log2, uint32_t r, uint32_t p,
+    yescrypt_flags_t flags,
     const uint8_t * src, size_t srclen)
 {
 	static uint8_t buf[4 + 1 + 5 + 5 + BYTES2CHARS(32) + 1];
@@ -326,7 +327,8 @@ uint8_t* yescrypt_gensalt(uint32_t N_log2, uint32_t r, uint32_t p, yescrypt_flag
 	    buf, sizeof(buf));
 }
 
-static int yescrypt_bsty(const uint8_t * passwd, size_t passwdlen,
+static int
+yescrypt_bsty(const uint8_t * passwd, size_t passwdlen,
     const uint8_t * salt, size_t saltlen, uint64_t N, uint32_t r, uint32_t p,
     uint8_t * buf, size_t buflen)
 {
@@ -345,11 +347,11 @@ static int yescrypt_bsty(const uint8_t * passwd, size_t passwdlen,
 			return -1;
 		}
 		initialized = 1;
-	}
+ 	}
 	retval = yescrypt_kdf(&shared, &local,
 	    passwd, passwdlen, salt, saltlen, N, r, p, 0, YESCRYPT_FLAGS,
-	    buf, buflen);
-#if 0
+	    buf, buflen);		
+#if 0		
 	if (yescrypt_free_local(&local)) {
 		yescrypt_free_shared(&shared);
 		return -1;
@@ -357,126 +359,16 @@ static int yescrypt_bsty(const uint8_t * passwd, size_t passwdlen,
 	if (yescrypt_free_shared(&shared))
 		return -1;
 	initialized = 0;
-#endif
+#endif		
 	return retval;
 }
 
-// scrypt parameters initialized at run time.
-uint64_t YESCRYPT_N;
-uint32_t YESCRYPT_R;
-uint32_t YESCRYPT_P;
-char *yescrypt_client_key = NULL;
-int yescrypt_client_key_len = 0;
-
-/* main hash 80 bytes input */
-void yescrypt_hash( const char *input, char *output, uint32_t len )
+void yescrypt_hash_sp(const char *input, char *output)
 {
-   yescrypt_bsty( (uint8_t*)input, len, (uint8_t*)input, len, YESCRYPT_N,
-                  YESCRYPT_R, YESCRYPT_P, (uint8_t*)output, 32 );
+   yescrypt_bsty((const uint8_t *)input, 80, (const uint8_t *) input, 80, 2048, 8, 1, (uint8_t *)output, 32);
 }
 
-/* for util.c test */
-void yescrypthash(void *output, const void *input)
-{
-	yescrypt_hash((char*) input, (char*) output, 80);
+void yescrypt_hash(const char *input, char *output)
+{	
+	yescrypt_hash_sp(input, output);
 }
-
-int scanhash_yescrypt( int thr_id, struct work *work, uint32_t max_nonce,
-                       uint64_t *hashes_done )
-{
-        uint32_t _ALIGN(64) vhash[8];
-        uint32_t _ALIGN(64) endiandata[20];
-        uint32_t *pdata = work->data;
-        uint32_t *ptarget = work->target;
-
-        const uint32_t Htarg = ptarget[7];
-        const uint32_t first_nonce = pdata[19];
-        uint32_t n = first_nonce;
-
-        for (int k = 0; k < 19; k++)
-                be32enc(&endiandata[k], pdata[k]);
-
-        do {
-                be32enc(&endiandata[19], n);
-                yescrypt_hash((char*) endiandata, (char*) vhash, 80);
-                if (vhash[7] < Htarg && fulltest(vhash, ptarget)) {
-                        work_set_target_ratio( work, vhash );
-                        *hashes_done = n - first_nonce + 1;
-                        pdata[19] = n;
-                        return true;
-                }
-                n++;
-        } while (n < max_nonce && !work_restart[thr_id].restart);
-
-        *hashes_done = n - first_nonce + 1;
-        pdata[19] = n;
-
-        return 0;
-}
-
-int64_t yescrypt_get_max64()
-{
-  return 0x1ffLL;
-}
-
-int64_t yescryptr16_get_max64()
-{
-  return 0xfffLL;
-}
-
-void yescrypt_gate_base(algo_gate_t *gate )
-{
-   gate->optimizations = SSE2_OPT | SHA_OPT;
-   gate->scanhash   = (void*)&scanhash_yescrypt;
-   gate->hash       = (void*)&yescrypt_hash;
-   gate->set_target = (void*)&scrypt_set_target;
-}
-
-bool register_yescrypt_algo( algo_gate_t* gate )
-{
-   yescrypt_gate_base( gate );
-   gate->get_max64  = (void*)&yescrypt_get_max64;
-   yescrypt_client_key = NULL;
-   yescrypt_client_key_len = 0;
-   YESCRYPT_N = 2048;
-   YESCRYPT_R = 8;
-   YESCRYPT_P = 1;
-   return true;
-}
-
-bool register_yescryptr8_algo( algo_gate_t* gate )
-{
-   yescrypt_gate_base( gate );
-   gate->get_max64  = (void*)&yescrypt_get_max64;
-   yescrypt_client_key = "Client Key";
-   yescrypt_client_key_len = 10;
-   YESCRYPT_N = 2048;
-   YESCRYPT_R = 8;
-   YESCRYPT_P = 1;
-   return true;
-}
-
-bool register_yescryptr16_algo( algo_gate_t* gate )
-{
-   yescrypt_gate_base( gate );
-   gate->get_max64  = (void*)&yescryptr16_get_max64;
-   yescrypt_client_key = "Client Key";
-   yescrypt_client_key_len = 10;
-   YESCRYPT_N = 4096;   
-   YESCRYPT_R = 16;   
-   YESCRYPT_P = 1;   
-   return true;
-}
-
-bool register_yescryptr32_algo( algo_gate_t* gate )
-{
-   yescrypt_gate_base( gate );
-   gate->get_max64  = (void*)&yescryptr16_get_max64;
-   yescrypt_client_key = "WaviBanana";
-   yescrypt_client_key_len = 10;
-   YESCRYPT_N = 4096;
-   YESCRYPT_R = 32;
-   YESCRYPT_P = 1;
-   return true;
-}
-
