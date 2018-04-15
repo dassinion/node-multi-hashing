@@ -18,7 +18,10 @@
  * SUCH DAMAGE.
  */
 
+#ifdef MAP_ANON
 #include <sys/mman.h>
+#endif
+
 #include "yescrypt.h"
 #define HUGEPAGE_THRESHOLD		(12 * 1024 * 1024)
 
@@ -27,6 +30,26 @@
 #else
 #undef HUGEPAGE_SIZE
 #endif
+
+static __inline uint32_t
+le32dec(const void *pp)
+{
+	const uint8_t *p = (uint8_t const *)pp;
+
+	return ((uint32_t)(p[0]) + ((uint32_t)(p[1]) << 8) +
+	    ((uint32_t)(p[2]) << 16) + ((uint32_t)(p[3]) << 24));
+}
+
+static __inline void
+le32enc(void *pp, uint32_t x)
+{
+	uint8_t * p = (uint8_t *)pp;
+
+	p[0] = x & 0xff;
+	p[1] = (x >> 8) & 0xff;
+	p[2] = (x >> 16) & 0xff;
+	p[3] = (x >> 24) & 0xff;
+}
 
 static void *
 alloc_region(yescrypt_region_t * region, size_t size)
@@ -86,7 +109,7 @@ alloc_region(yescrypt_region_t * region, size_t size)
 	return aligned;
 }
 
-static inline void
+static __inline void
 init_region(yescrypt_region_t * region)
 {
 	region->base = region->aligned = NULL;
@@ -108,14 +131,11 @@ free_region(yescrypt_region_t * region)
 	return 0;
 }
 
-int
-yescrypt_init_shared(yescrypt_shared_t * shared,
-    const uint8_t * param, size_t paramlen,
-    uint64_t N, uint32_t r, uint32_t p,
-    yescrypt_init_shared_flags_t flags, uint32_t mask,
+int yescrypt_init_shared(yescrypt_shared_t * shared, const uint8_t * param, size_t paramlen,
+    uint64_t N, uint32_t r, uint32_t p, yescrypt_init_shared_flags_t flags, uint32_t mask,
     uint8_t * buf, size_t buflen)
 {
-	yescrypt_shared1_t * shared1 = &shared->shared1;
+	yescrypt_shared1_t* shared1 = &shared->shared1;
 	yescrypt_shared_t dummy, half1, half2;
 	uint8_t salt[32];
 
@@ -139,7 +159,7 @@ yescrypt_init_shared(yescrypt_shared_t * shared,
 
 	half1 = half2 = *shared;
 	half1.shared1.aligned_size /= 2;
-	half2.shared1.aligned += half1.shared1.aligned_size;
+	half2.shared1.aligned = (void*) ((size_t)half2.shared1.aligned + half1.shared1.aligned_size);
 	half2.shared1.aligned_size = half1.shared1.aligned_size;
 	N /= 2;
 
