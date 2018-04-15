@@ -933,6 +933,7 @@ void init(v8::Local<v8::Object> target) {
     NODE_SET_METHOD(target, "scryptn", scryptn);
     NODE_SET_METHOD(target, "scryptjane", scryptjane);
     NODE_SET_METHOD(target, "yescrypt", yescrypt);
+    NODE_SET_METHOD(target, "yescryptR16", yescryptr16);
     NODE_SET_METHOD(target, "keccak", keccak);
     NODE_SET_METHOD(target, "bcrypt", bcrypt);
     NODE_SET_METHOD(target, "skein", skein);
