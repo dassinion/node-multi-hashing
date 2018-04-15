@@ -372,8 +372,3 @@ void yescrypt_hash(const char *input, char *output)
 {	
 	yescrypt_hash_sp(input, output);
 }
-
-void yescryptR16_hash(const char *input, char *output, uint32_t len)
-{
-	yescrypt_bsty((const uint8_t *)input, len, (const uint8_t *)input, len, 4096, 16, 1, (uint8_t *)output, 32);
-}

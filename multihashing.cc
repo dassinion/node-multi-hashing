@@ -274,32 +274,6 @@ void yescrypt(const v8::FunctionCallbackInfo<v8::Value>& args) {
    args.GetReturnValue().Set(returnValue);
 }
 
-void yescryptr16(const v8::FunctionCallbackInfo<v8::Value>& args) {
-   v8::Isolate* isolate = args.GetIsolate();
-
-   if (args.Length() < 1) {
-       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Wrong number of arguments")));
-       return;
-   }
-
-   Local<Object> target = args[0]->ToObject();
-
-   if(!Buffer::HasInstance(target)) {
-       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate,"Argument should be a buffer object.")));
-       return;
-   }
-
-   char * input = Buffer::Data(target);
-   char output[32];
-
-   uint32_t input_len = Buffer::Length(target);
-
-   yescryptR16_hash(input, output, input_len);
-
-   v8::Local<v8::Value> returnValue = Nan::CopyBuffer(output, 32).ToLocalChecked();
-   args.GetReturnValue().Set(returnValue);
-}
-
 void keccak(const v8::FunctionCallbackInfo<v8::Value>& args) {
    v8::Isolate* isolate = args.GetIsolate();
 
@@ -933,7 +907,6 @@ void init(v8::Local<v8::Object> target) {
     NODE_SET_METHOD(target, "scryptn", scryptn);
     NODE_SET_METHOD(target, "scryptjane", scryptjane);
     NODE_SET_METHOD(target, "yescrypt", yescrypt);
-    NODE_SET_METHOD(target, "yescryptR16", yescryptr16);
     NODE_SET_METHOD(target, "keccak", keccak);
     NODE_SET_METHOD(target, "bcrypt", bcrypt);
     NODE_SET_METHOD(target, "skein", skein);
