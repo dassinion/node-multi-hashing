@@ -34,6 +34,7 @@ extern "C" {
     #include "jh.h"
     #include "x5.h"
     #include "c11.h"
+    #include "xevan.h"
 }
 
 #include "boolberry.h"
@@ -898,6 +899,32 @@ void equihash(const v8::FunctionCallbackInfo<v8::Value>& args) {
    args.GetReturnValue().Set(result);
 }
 
+void xevan(const v8::FunctionCallbackInfo<v8::Value>& args) {
+   v8::Isolate* isolate = args.GetIsolate();
+
+   if (args.Length() < 1) {
+       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Wrong number of arguments")));
+       return;
+   }
+
+   Local<Object> target = args[0]->ToObject();
+
+   if(!Buffer::HasInstance(target)) {
+       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate,"Argument should be a buffer object.")));
+       return;
+   }
+
+   char * input = Buffer::Data(target);
+   char output[32];
+
+   uint32_t input_len = Buffer::Length(target);
+
+   xevan_hash(input, output, input_len);
+
+   v8::Local<v8::Value> returnValue = Nan::CopyBuffer(output, 32).ToLocalChecked();
+   args.GetReturnValue().Set(returnValue);
+}
+
 void init(v8::Local<v8::Object> target) {
     NODE_SET_METHOD(target, "scrypt", Scrypt);
     NODE_SET_METHOD(target, "quark", Quark);
@@ -931,6 +958,7 @@ void init(v8::Local<v8::Object> target) {
     NODE_SET_METHOD(target, "equihash", equihash);
     NODE_SET_METHOD(target, "jh", jh);
     NODE_SET_METHOD(target, "c11", c11);
+    NODE_SET_METHOD(target, "xevan", xevan);
 }
 
 NODE_MODULE(multihashing, init)
