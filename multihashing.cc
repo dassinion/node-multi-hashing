@@ -35,9 +35,11 @@ extern "C" {
     #include "x5.h"
     #include "c11.h"
     #include "lyra2re.h"
+    #include "Lyra2REV2.h"
     #include "lyra2v2.h"
     #include "lyra2z.h"
     #include "xevan.h"
+    #include "phi1612.h"
 }
 
 #include "boolberry.h"
@@ -1006,6 +1008,58 @@ void lyra2z(const v8::FunctionCallbackInfo<v8::Value>& args) {
    args.GetReturnValue().Set(returnValue);
 }
 
+void phi1612(const v8::FunctionCallbackInfo<v8::Value>& args) {
+   v8::Isolate* isolate = args.GetIsolate();
+
+   if (args.Length() < 1) {
+       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Wrong number of arguments")));
+       return;
+   }
+
+   Local<Object> target = args[0]->ToObject();
+
+   if(!Buffer::HasInstance(target)) {
+       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate,"Argument should be a buffer object.")));
+       return;
+   }
+
+   char * input = Buffer::Data(target);
+   char output[32];
+
+   uint32_t input_len = Buffer::Length(target);
+
+   phi1612_hash(input, output, input_len);
+
+   v8::Local<v8::Value> returnValue = Nan::CopyBuffer(output, 32).ToLocalChecked();
+   args.GetReturnValue().Set(returnValue);
+}
+
+void lyra2rev2(const v8::FunctionCallbackInfo<v8::Value>& args) {
+   v8::Isolate* isolate = args.GetIsolate();
+
+   if (args.Length() < 1) {
+       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Wrong number of arguments")));
+       return;
+   }
+
+   Local<Object> target = args[0]->ToObject();
+
+   if(!Buffer::HasInstance(target)) {
+       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate,"Argument should be a buffer object.")));
+       return;
+   }
+
+   char * input = Buffer::Data(target);
+   char output[32];
+
+   uint32_t input_len = Buffer::Length(target);
+
+   lyra2rev2_hash(input, output, input_len);
+
+   v8::Local<v8::Value> returnValue = Nan::CopyBuffer(output, 32).ToLocalChecked();
+   args.GetReturnValue().Set(returnValue);
+}
+
 void init(v8::Local<v8::Object> target) {
     NODE_SET_METHOD(target, "scrypt", Scrypt);
     NODE_SET_METHOD(target, "quark", Quark);
@@ -1040,9 +1094,11 @@ void init(v8::Local<v8::Object> target) {
     NODE_SET_METHOD(target, "jh", jh);
     NODE_SET_METHOD(target, "c11", c11);
     NODE_SET_METHOD(target, "lyra2re", lyra2re);
+    NODE_SET_METHOD(target, "lyra2rev2", lyra2rev2);
     NODE_SET_METHOD(target, "lyra2v2", lyra2v2);
     NODE_SET_METHOD(target, "lyra2z", lyra2z);
     NODE_SET_METHOD(target, "xevan", xevan);
+    NODE_SET_METHOD(target, "phi1612", phi1612);
 }
 
 NODE_MODULE(multihashing, init)
