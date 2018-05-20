@@ -113,6 +113,10 @@ OBJS := \
 	$(obj).target/$(TARGET)/neoscrypt.o \
 	$(obj).target/$(TARGET)/dcrypt.o \
 	$(obj).target/$(TARGET)/jh.o \
+	$(obj).target/$(TARGET)/xevan.o \
+	$(obj).target/$(TARGET)/lyra2re.o \
+	$(obj).target/$(TARGET)/lyra2v2.o \
+	$(obj).target/$(TARGET)/equi.o \
 	$(obj).target/$(TARGET)/sha3/sph_hefty1.o \
 	$(obj).target/$(TARGET)/sha3/sph_fugue.o \
 	$(obj).target/$(TARGET)/sha3/aes_helper.o \
