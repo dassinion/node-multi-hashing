@@ -51,6 +51,7 @@
                 "sha3/sph_shabal.c",
                 "sha3/sph_sha2.c",
                 "sha3/sph_sha2big.c",
+                "sha3/sph_haval.c",
                 "sha3/hamsi.c",
                 "xevan.c",
                 "phi1612.c",
@@ -72,13 +73,13 @@
                 "<!(node -e \"require('nan')\")"
             ],
             "cflags": [
-                "-D_GNU_SOURCE -maes -fPIC -Ofast -fuse-linker-plugin -funroll-loops -funswitch-loops -fpeel-loops"
+                "-D_GNU_SOURCE -maes -fPIC -Ofast -flto -fuse-linker-plugin -funroll-loops -funswitch-loops -fpeel-loops"
             ],
             "cflags!": [ 
                 "-O2", "-fno-strict-aliasing", "-fno-tree-vrp", "-fno-omit-frame-pointer"
             ],
             "ldflags": [
-                "-fPIC -Ofast -fuse-linker-plugin"
+                "-fPIC -Ofast -flto -fuse-linker-plugin"
             ],
             "cflags_cc": [
                 "-std=c++0x -maes -march=native"
