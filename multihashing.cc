@@ -67,9 +67,9 @@ void Scrypt(const v8::FunctionCallbackInfo<v8::Value>& args) {
        return;
    }
 
-   Local<Number> numn = args[1]->ToNumber();
+   Local<Number> numn = args[1]->Uint32Value();
    unsigned int nValue = numn->Value();
-   Local<Number> numr = args[2]->ToNumber();
+   Local<Number> numr = args[2]->Uint32Value();
    unsigned int rValue = numr->Value();
 
    char * input = Buffer::Data(target);
@@ -202,7 +202,7 @@ void scryptn(const v8::FunctionCallbackInfo<v8::Value>& args) {
        return;
    }
 
-   Local<Number> num = args[1]->ToNumber();
+   Local<Number> num = args[1]->Uint32Value();
    unsigned int nFactor = num->Value();
 
    char * input = Buffer::Data(target);
@@ -233,16 +233,16 @@ void scryptjane(const v8::FunctionCallbackInfo<v8::Value>& args) {
        return;
    }
 
-   Local<Number> num = args[1]->ToNumber();
+   Local<Number> num = args[1]->Uint32Value();
    int timestamp = num->Value();
 
-   Local<Number> num2 = args[2]->ToNumber();
+   Local<Number> num2 = args[2]->Uint32Value();
    int nChainStartTime = num2->Value();
 
-   Local<Number> num3 = args[3]->ToNumber();
+   Local<Number> num3 = args[3]->Uint32Value();
    int nMin = num3->Value();
 
-   Local<Number> num4 = args[4]->ToNumber();
+   Local<Number> num4 = args[4]->Uint32Value();
    int nMax = num4->Value();
 
    char * input = Buffer::Data(target);
