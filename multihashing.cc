@@ -233,17 +233,13 @@ void scryptjane(const v8::FunctionCallbackInfo<v8::Value>& args) {
        return;
    }
 
-   Local<Number> num = args[1]->Uint32Value();
-   int timestamp = num->Value();
+   int timestamp = args[1]->Uint32Value();
 
-   Local<Number> num2 = args[2]->Uint32Value();
-   int nChainStartTime = num2->Value();
+   int nChainStartTime = args[2]->Uint32Value();
 
-   Local<Number> num4 = args[3]->Uint32Value();
-   int nMin = num3->Value();
+   int nMin = args[3]->Uint32Value();
 
-   Local<Number> num4 = args[4]->Uint32Value();
-   int nMax = num4->Value();
+   int nMax = args[4]->Uint32Value();
 
    char * input = Buffer::Data(target);
    char output[32];
