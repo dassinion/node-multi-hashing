@@ -67,10 +67,8 @@ void Scrypt(const v8::FunctionCallbackInfo<v8::Value>& args) {
        return;
    }
 
-   Local<Number> numn = args[1]->Uint32Value();
-   unsigned int nValue = numn->Value();
-   Local<Number> numr = args[2]->Uint32Value();
-   unsigned int rValue = numr->Value();
+   unsigned int nValue = args[1]->Uint32Value();
+   unsigned int rValue = args[2]->Uint32Value();
 
    char * input = Buffer::Data(target);
    char output[32];
@@ -202,8 +200,7 @@ void scryptn(const v8::FunctionCallbackInfo<v8::Value>& args) {
        return;
    }
 
-   Local<Number> num = args[1]->Uint32Value();
-   unsigned int nFactor = num->Value();
+   unsigned int nFactor = args[1]->Uint32Value();
 
    char * input = Buffer::Data(target);
    char output[32];
