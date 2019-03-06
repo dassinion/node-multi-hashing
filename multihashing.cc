@@ -29,7 +29,6 @@ extern "C" {
     #include "sha1.h"
     #include "x15.h"
     #include "fresh.h"
-//    #include "equi.h"
     #include "dcrypt.h"
     #include "jh.h"
     #include "x5.h"
@@ -41,6 +40,8 @@ extern "C" {
     #include "xevan.h"
     #include "phi1612.h"
 }
+
+//    #include "equi.h"
 
 #include "boolberry.h"
 
