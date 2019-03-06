@@ -177,7 +177,7 @@ void neoscrypt(const v8::FunctionCallbackInfo<v8::Value>& args) {
    }
 
    char * input = Buffer::Data(target);
-   char output[32];
+   char output[34];
 
 //   uint32_t input_len = Buffer::Length(target);
 
@@ -239,7 +239,7 @@ void scryptjane(const v8::FunctionCallbackInfo<v8::Value>& args) {
    Local<Number> num2 = args[2]->Uint32Value();
    int nChainStartTime = num2->Value();
 
-   Local<Number> num3 = args[3]->Uint32Value();
+   Local<Number> num4 = args[3]->Uint32Value();
    int nMin = num3->Value();
 
    Local<Number> num4 = args[4]->Uint32Value();
@@ -705,7 +705,7 @@ void boolberry(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
    if(args.Length() >= 3)
        if(args[2]->IsUint32())
-            height = args[2]->ToUint32()->Uint32Value();
+            height = args[2]->Uint32Value();
        else {
             isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate,"Argument 3 should be an unsigned integer.")));
 	    return;
