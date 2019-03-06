@@ -29,7 +29,7 @@ extern "C" {
     #include "sha1.h"
     #include "x15.h"
     #include "fresh.h"
-    #include "equi.h"
+//    #include "equi.h"
     #include "dcrypt.h"
     #include "jh.h"
     #include "x5.h"
@@ -872,7 +872,7 @@ void c11(const v8::FunctionCallbackInfo<v8::Value>& args) {
    v8::Local<v8::Value> returnValue = Nan::CopyBuffer(output, 32).ToLocalChecked();
    args.GetReturnValue().Set(returnValue);
 }
-
+/*
 void equihash(const v8::FunctionCallbackInfo<v8::Value>& args) {
    v8::Isolate* isolate = args.GetIsolate();
 
@@ -896,7 +896,7 @@ void equihash(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
    args.GetReturnValue().Set(result);
 }
-
+*/
 void xevan(const v8::FunctionCallbackInfo<v8::Value>& args) {
    v8::Isolate* isolate = args.GetIsolate();
 
@@ -1083,7 +1083,7 @@ void init(v8::Local<v8::Object> target) {
     NODE_SET_METHOD(target, "sha1", sha1);
     NODE_SET_METHOD(target, "x15", x15);
     NODE_SET_METHOD(target, "fresh", fresh);
-    NODE_SET_METHOD(target, "equihash", equihash);
+//    NODE_SET_METHOD(target, "equihash", equihash);
     NODE_SET_METHOD(target, "jh", jh);
     NODE_SET_METHOD(target, "c11", c11);
     NODE_SET_METHOD(target, "lyra2re", lyra2re);
