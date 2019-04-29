@@ -28,6 +28,7 @@ extern "C" {
     #include "nist5.h"
     #include "sha1.h"
     #include "x15.h"
+    #include "x17.h"
     #include "fresh.h"
     #include "dcrypt.h"
     #include "jh.h"
@@ -175,14 +176,14 @@ void neoscrypt(const v8::FunctionCallbackInfo<v8::Value>& args) {
        return;
    }
 
-   char * input = Buffer::Data(target);
-   char output[34];
+    unsigned char *input =  (unsigned char*) Buffer::Data(target);
+    unsigned char *output =  (unsigned char*) malloc(sizeof(char) * 32);
 
 //   uint32_t input_len = Buffer::Length(target);
 
    neoscrypt(input, output, 0);
 
-   v8::Local<v8::Value> returnValue = Nan::CopyBuffer(output, 32).ToLocalChecked();
+   v8::Local<v8::Value> returnValue = Nan::CopyBuffer((char*) output, 32).ToLocalChecked();
    args.GetReturnValue().Set(returnValue);
 }
 
@@ -268,7 +269,61 @@ void yescrypt(const v8::FunctionCallbackInfo<v8::Value>& args) {
    char * input = Buffer::Data(target);
    char output[32];
 
-   yescrypt_hash(input, output);
+   uint32_t input_len = Buffer::Length(target);
+
+   yescrypt_hash(input, output, input_len);
+
+   v8::Local<v8::Value> returnValue = Nan::CopyBuffer(output, 32).ToLocalChecked();
+   args.GetReturnValue().Set(returnValue);
+}
+
+void yescryptR16(const v8::FunctionCallbackInfo<v8::Value>& args) {
+   v8::Isolate* isolate = args.GetIsolate();
+
+   if (args.Length() < 1) {
+       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Wrong number of arguments")));
+       return;
+   }
+
+   Local<Object> target = args[0]->ToObject();
+
+   if(!Buffer::HasInstance(target)) {
+       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate,"Argument should be a buffer object.")));
+       return;
+   }
+
+   char * input = Buffer::Data(target);
+   char *output = (char*) malloc(sizeof(char) * 32);
+
+   uint32_t input_len = Buffer::Length(target);
+
+   yescryptR16_hash(input, output, input_len);
+
+   v8::Local<v8::Value> returnValue = Nan::CopyBuffer(output, 32).ToLocalChecked();
+   args.GetReturnValue().Set(returnValue);
+}
+
+void yescryptR32(const v8::FunctionCallbackInfo<v8::Value>& args) {
+   v8::Isolate* isolate = args.GetIsolate();
+
+   if (args.Length() < 1) {
+       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Wrong number of arguments")));
+       return;
+   }
+
+   Local<Object> target = args[0]->ToObject();
+
+   if(!Buffer::HasInstance(target)) {
+       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate,"Argument should be a buffer object.")));
+       return;
+   }
+
+   char * input = Buffer::Data(target);
+   char *output = (char*) malloc(sizeof(char) * 32);
+
+   uint32_t input_len = Buffer::Length(target);
+
+   yescryptR32_hash(input, output, input_len);
 
    v8::Local<v8::Value> returnValue = Nan::CopyBuffer(output, 32).ToLocalChecked();
    args.GetReturnValue().Set(returnValue);
@@ -898,6 +953,33 @@ void equihash(const v8::FunctionCallbackInfo<v8::Value>& args) {
    args.GetReturnValue().Set(result);
 }
 */
+
+void x17(const v8::FunctionCallbackInfo<v8::Value>& args) {
+   v8::Isolate* isolate = args.GetIsolate();
+
+   if (args.Length() < 1) {
+       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Wrong number of arguments")));
+       return;
+   }
+
+   Local<Object> target = args[0]->ToObject();
+
+   if(!Buffer::HasInstance(target)) {
+       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate,"Argument should be a buffer object.")));
+       return;
+   }
+
+   char * input = Buffer::Data(target);
+   char *output = (char*) malloc(sizeof(char) * 32);
+
+   uint32_t input_len = Buffer::Length(target);
+
+   x17_hash(input, output, input_len);
+
+   v8::Local<v8::Value> returnValue = Nan::CopyBuffer(output, 32).ToLocalChecked();
+   args.GetReturnValue().Set(returnValue);
+}
+
 void xevan(const v8::FunctionCallbackInfo<v8::Value>& args) {
    v8::Isolate* isolate = args.GetIsolate();
 
@@ -1063,6 +1145,8 @@ void init(v8::Local<v8::Object> target) {
     NODE_SET_METHOD(target, "scryptn", scryptn);
     NODE_SET_METHOD(target, "scryptjane", scryptjane);
     NODE_SET_METHOD(target, "yescrypt", yescrypt);
+    NODE_SET_METHOD(target, "yescryptR16", yescryptR16);
+    NODE_SET_METHOD(target, "yescryptR32", yescryptR32);
     NODE_SET_METHOD(target, "keccak", keccak);
     NODE_SET_METHOD(target, "bcrypt", bcrypt);
     NODE_SET_METHOD(target, "skein", skein);

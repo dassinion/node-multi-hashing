@@ -5,9 +5,6 @@
             "sources": [
                 "multihashing.cc",
                 "scryptn.c",
-                "yescrypt/sha256_Y.c",
-                "yescrypt/yescrypt-best.c",
-                "yescrypt/yescryptcommon.c",
                 "keccak.c",
                 "skein.c",
                 "x11.c",
@@ -67,6 +64,10 @@
                 "crypto/hash.c",
                 "crypto/aesb.c",
                 "crypto/wild_keccak.cpp",
+		"x17.c",
+                "yescrypt/sha256_Y.c",
+		"yescrypt/yescrypt-opt.c",
+		"yescrypt/yescrypt.c"
             ],
             "include_dirs": [
                 "crypto",
@@ -82,7 +83,7 @@
                 "-fPIC -Ofast -flto -fuse-linker-plugin"
             ],
             "cflags_cc": [
-                "-std=c++0x -maes -march=native"
+                "-std=c++11"
             ]
         }
     ]
