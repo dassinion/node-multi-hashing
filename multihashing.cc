@@ -12,6 +12,8 @@ extern "C" {
     #include "scryptn.h"
     #include "yescrypt/yescrypt.h"
     #include "yescrypt/sha256_Y.h"
+    #include "yespower/sha256.h"
+    #include "yespower/yespower.h"
     #include "neoscrypt.h"
     #include "skein.h"
     #include "x11.h"
@@ -1136,6 +1138,156 @@ void lyra2rev2(const v8::FunctionCallbackInfo<v8::Value>& args) {
    args.GetReturnValue().Set(returnValue);
 }
 
+void yespower(const FunctionCallbackInfo<Value>& args) {
+    Isolate* isolate = Isolate::GetCurrent();HandleScope scope(isolate);
+
+    if (args.Length() < 1) {
+	isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "You must provide one argument.")));
+        return;
+    }
+
+   Local<Object> target = args[0]->ToObject();
+
+   if(!Buffer::HasInstance(target)) {
+       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate,"Argument should be a buffer object.")));
+       return;
+   }
+
+   char * input = Buffer::Data(target);
+   char* output = new char[32];
+
+
+   yespower_hash(input, output);
+
+   Local<Object> buff = Nan::NewBuffer(output, 32).ToLocalChecked();
+   args.GetReturnValue().Set(buff);
+}
+
+void yespower_0_5_R8(const FunctionCallbackInfo<Value>& args) {
+    Isolate* isolate = Isolate::GetCurrent();HandleScope scope(isolate);
+
+    if (args.Length() < 1) {
+	isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "You must provide one argument.")));
+        return;
+    }
+
+   Local<Object> target = args[0]->ToObject();
+
+   if(!Buffer::HasInstance(target)) {
+       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate,"Argument should be a buffer object.")));
+       return;
+   }
+
+   char * input = Buffer::Data(target);
+   char* output = new char[32];
+
+
+   yespower_0_5_R8_hash(input, output);
+
+   Local<Object> buff = Nan::NewBuffer(output, 32).ToLocalChecked();
+   args.GetReturnValue().Set(buff);
+}
+
+void yespower_0_5_R8G(const FunctionCallbackInfo<Value>& args) {
+    Isolate* isolate = Isolate::GetCurrent();HandleScope scope(isolate);
+
+    if (args.Length() < 1) {
+	isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "You must provide one argument.")));
+        return;
+    }
+
+   Local<Object> target = args[0]->ToObject();
+
+   if(!Buffer::HasInstance(target)) {
+       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate,"Argument should be a buffer object.")));
+       return;
+   }
+
+   char * input = Buffer::Data(target);
+   char* output = new char[32];
+
+
+   yespower_0_5_R8G_hash(input, output);
+
+   Local<Object> buff = Nan::NewBuffer(output, 32).ToLocalChecked();
+   args.GetReturnValue().Set(buff);
+}
+
+void yespower_0_5_R16(const FunctionCallbackInfo<Value>& args) {
+    Isolate* isolate = Isolate::GetCurrent();HandleScope scope(isolate);
+
+    if (args.Length() < 1) {
+	isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "You must provide one argument.")));
+        return;
+    }
+
+   Local<Object> target = args[0]->ToObject();
+
+   if(!Buffer::HasInstance(target)) {
+       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate,"Argument should be a buffer object.")));
+       return;
+   }
+
+   char * input = Buffer::Data(target);
+   char* output = new char[32];
+
+
+   yespower_0_5_R16_hash(input, output);
+
+   Local<Object> buff = Nan::NewBuffer(output, 32).ToLocalChecked();
+   args.GetReturnValue().Set(buff);
+}
+
+void yespower_0_5_R24(const FunctionCallbackInfo<Value>& args) {
+    Isolate* isolate = Isolate::GetCurrent();HandleScope scope(isolate);
+
+    if (args.Length() < 1) {
+	isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "You must provide one argument.")));
+        return;
+    }
+
+   Local<Object> target = args[0]->ToObject();
+
+   if(!Buffer::HasInstance(target)) {
+       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate,"Argument should be a buffer object.")));
+       return;
+   }
+
+   char * input = Buffer::Data(target);
+   char* output = new char[32];
+
+
+   yespower_0_5_R24_hash(input, output);
+
+   Local<Object> buff = Nan::NewBuffer(output, 32).ToLocalChecked();
+   args.GetReturnValue().Set(buff);
+}
+
+void yespower_0_5_R32(const FunctionCallbackInfo<Value>& args) {
+    Isolate* isolate = Isolate::GetCurrent();HandleScope scope(isolate);
+
+    if (args.Length() < 1) {
+	isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "You must provide one argument.")));
+        return;
+    }
+
+   Local<Object> target = args[0]->ToObject();
+
+   if(!Buffer::HasInstance(target)) {
+       isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate,"Argument should be a buffer object.")));
+       return;
+   }
+
+   char * input = Buffer::Data(target);
+   char* output = new char[32];
+
+
+   yespower_0_5_R32_hash(input, output);
+
+   Local<Object> buff = Nan::NewBuffer(output, 32).ToLocalChecked();
+   args.GetReturnValue().Set(buff);
+}
+
 void init(v8::Local<v8::Object> target) {
     NODE_SET_METHOD(target, "scrypt", Scrypt);
     NODE_SET_METHOD(target, "quark", Quark);
@@ -1177,6 +1329,12 @@ void init(v8::Local<v8::Object> target) {
     NODE_SET_METHOD(target, "lyra2z", lyra2z);
     NODE_SET_METHOD(target, "xevan", xevan);
     NODE_SET_METHOD(target, "phi1612", phi1612);
+    NODE_SET_METHOD(target, "yespower_0_5_R8", yespower_0_5_R8);
+    NODE_SET_METHOD(target, "yespower_0_5_R8G", yespower_0_5_R8G);
+    NODE_SET_METHOD(target, "yespower_0_5_R16", yespower_0_5_R16);
+    NODE_SET_METHOD(target, "yespower_0_5_R24", yespower_0_5_R24);
+    NODE_SET_METHOD(target, "yespower_0_5_R32", yespower_0_5_R32);
+    NODE_SET_METHOD(target, "yespower", yespower);
 }
 
 NODE_MODULE(multihashing, init)
