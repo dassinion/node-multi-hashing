@@ -67,7 +67,9 @@
 		"x17.c",
 		"yespower/sha256.c",
 		"yespower/yespower-opt.c",
-		"yespower/yespower.c"
+		"yespower/yespower.c",
+                "yescrypt/yescrypt-opt.c",
+                "yescrypt/yescrypt.c"
             ],
             "include_dirs": [
                 "crypto",
